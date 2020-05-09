@@ -1,7 +1,11 @@
 package com.pat.controller;
 
+import com.pat.pojo.Users;
 import com.pat.pojo.bo.UserBO;
 import com.pat.service.UserService;
+import com.pat.utils.CookieUtils;
+import com.pat.utils.JsonUtils;
+import com.pat.utils.MD5Utils;
 import com.pat.utils.ResJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -9,8 +13,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
- * @Description
+ * @Description: 注册登录
  * @Author 不才人
  * @Create Date 2020/5/9 9:20 上午
  * @Modify
@@ -44,7 +51,8 @@ public class PassportController {
 
     @ApiOperation(value = "用户注册", notes = "用户注册", httpMethod = "POST")
     @PostMapping("/regist")
-    private ResJSONResult regist(@RequestBody UserBO userBO) {
+    private ResJSONResult regist(@RequestBody UserBO userBO,
+                                 HttpServletRequest request, HttpServletResponse response) {
 
         String username = userBO.getUsername();
         String password = userBO.getPassword();
@@ -71,8 +79,47 @@ public class PassportController {
         }
 
         // 5. 实现注册
-        userService.createUser(userBO);
+        Users userResult = userService.createUser(userBO);
+
+        setNullProperty(userResult);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
 
         return ResJSONResult.ok();
+    }
+
+    @ApiOperation(value = "用户登陆", notes = "用户登陆", httpMethod = "POST")
+    @PostMapping("/login")
+    private ResJSONResult login(@RequestBody UserBO userBO,
+                                HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String username = userBO.getUsername();
+        String password = userBO.getPassword();
+        String confirmPwd = userBO.getConfirmPassword();
+
+        // 1. 判断用户名和密码必须不为空
+        if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
+            return ResJSONResult.errorMsg("用户名或密码不能为空");
+        }
+
+        // 2. 实现登陆
+        Users userResult = userService.queryUserForLogin(username, MD5Utils.getMD5Str(password));
+
+        if (userResult == null) {
+            return ResJSONResult.errorMsg("用户名或密码错误");
+        }
+
+        setNullProperty(userResult);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+        return ResJSONResult.ok(userResult);
+    }
+
+    private Users setNullProperty(Users userResult) {
+        userResult.setPassword(null);
+        userResult.setMobile(null);
+        userResult.setEmail(null);
+        userResult.setCreatedTime(null);
+        userResult.setUpdatedTime(null);
+        userResult.setBirthday(null);
+        return userResult;
     }
 }
