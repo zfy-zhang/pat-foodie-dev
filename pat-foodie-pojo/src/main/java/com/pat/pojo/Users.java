@@ -1,5 +1,7 @@
 package com.pat.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 import javax.persistence.*;
 
@@ -18,6 +20,7 @@ public class Users {
     /**
      * 密码 密码
      */
+    @JsonIgnore
     private String password;
 
     /**
@@ -28,6 +31,7 @@ public class Users {
     /**
      * 真实姓名
      */
+    @JsonIgnore
     private String realname;
 
     /**
