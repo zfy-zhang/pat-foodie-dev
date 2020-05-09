@@ -11,5 +11,18 @@
 
     <artifactId>pat-foodie-mapper</artifactId>
 
+    <dependencies>
+
+        <!--
+            mapper -> pojo -> common
+            mapper通过pojo是可以使用common中相应的方法的
+        -->
+        <dependency>
+            <groupId>com.pat</groupId>
+            <artifactId>pat-foodie-pojo</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
 
 </project>
