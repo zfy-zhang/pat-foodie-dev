@@ -1,7 +1,7 @@
 package com.pat.pojo;
 
-import java.util.Date;
 import javax.persistence.*;
+import java.util.Date;
 
 @Table(name = "order_status")
 public class OrderStatus {

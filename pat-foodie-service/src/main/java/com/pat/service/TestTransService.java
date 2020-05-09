@@ -9,5 +9,6 @@ package com.pat.service;
  * Copyright (c) 2020,All Rights Reserved.
  * Description：
  */
-public class TestTransService {
+public interface TestTransService {
+    public void testPropagationTrans();
 }

@@ -9,6 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- 默认打包方式为 jar -->
+    <!--<packaging>jar</packaging>-->
     <artifactId>pat-foodie-common</artifactId>
 
 

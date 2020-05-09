@@ -1,5 +1,8 @@
 package com.pat.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 /**
  * Project Name: pat-foodie-dev
  * File Name: HelloController
@@ -9,5 +12,10 @@ package com.pat.controller;
  * Copyright (c) 2020,All Rights Reserved.
  * Description：
  */
+@RestController
 public class HelloController {
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello World";
+    }
 }
