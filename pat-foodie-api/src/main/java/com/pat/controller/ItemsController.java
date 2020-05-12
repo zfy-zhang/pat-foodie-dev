@@ -6,6 +6,7 @@ import com.pat.pojo.ItemsParam;
 import com.pat.pojo.ItemsSpec;
 import com.pat.pojo.vo.CommentLevelCountsVO;
 import com.pat.pojo.vo.ItemInfoVO;
+import com.pat.pojo.vo.ShopcartVO;
 import com.pat.service.ItemService;
 import com.pat.utils.PagedGridResult;
 import com.pat.utils.ResJSONResult;
@@ -117,5 +118,47 @@ public class ItemsController extends BaseController {
         PagedGridResult grid = itemService.searchItems(keywords, sort, page, pageSize);
 
         return ResJSONResult.ok(grid);
+    }
+
+    @ApiOperation(value = "通过分类id搜索商品列表", notes = "通过分类id搜索商品列表", httpMethod = "GET")
+    @GetMapping("/catItems")
+    public ResJSONResult catItems(@ApiParam(name = "catId", value = "三级分类id", required = true)
+                                  @RequestParam Integer catId,
+                                  @ApiParam(name = "sort", value = "排序", required = false)
+                                  @RequestParam String sort,
+                                  @ApiParam(name = "page", value = "查询下一页的第几页", required = false)
+                                  @RequestParam Integer page,
+                                  @ApiParam(name = "pageSize", value = "分页每一页显示的记录数", required = false)
+                                  @RequestParam Integer pageSize
+    ) {
+        if (catId == null) {
+            return ResJSONResult.errorMsg(null);
+        }
+        if (page == null) {
+            page = 1;
+        }
+
+        if (pageSize == null) {
+            pageSize = PAGE_SIZE;
+        }
+
+        PagedGridResult grid = itemService.searchItems(catId, sort, page, pageSize);
+
+        return ResJSONResult.ok(grid);
+    }
+
+
+    // 用于长时间未登录网站，刷新购物车中的数据（主要是商品价格），类似淘宝京东
+    @ApiOperation(value = "根据商品规格id查询最新商品数据", notes = "根据商品规格id查询最新商品数据", httpMethod = "GET")
+    @GetMapping("/refresh")
+    public ResJSONResult refresh(@ApiParam(name = "itemSpecIds", value = "拼接的规格ids", required = true, example = "1001,1002,1003")
+                                  @RequestParam String itemSpecIds
+    ) {
+        if (StringUtils.isBlank(itemSpecIds)) {
+            return ResJSONResult.ok();
+        }
+
+        List<ShopcartVO> list = itemService.queryItemsBySpecIds(itemSpecIds);
+        return ResJSONResult.ok(list);
     }
 }

@@ -81,7 +81,10 @@ public class PassportController {
         // 5. 实现注册
         Users userResult = userService.createUser(userBO);
 
-        setNullProperty(userResult);
+        userResult = setNullProperty(userResult);
+        // TODO 生存用户token，存入redis会话
+        // TODO 同步购物车数据
+
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
 
         return ResJSONResult.ok();
@@ -107,8 +110,11 @@ public class PassportController {
             return ResJSONResult.errorMsg("用户名或密码错误");
         }
 
-        setNullProperty(userResult);
+        userResult = setNullProperty(userResult);
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+
+        // TODO 生存用户token，存入redis会话
+        // TODO 同步购物车数据
         return ResJSONResult.ok(userResult);
     }
 
@@ -130,6 +136,8 @@ public class PassportController {
 
         // TODO 用户推出登录，需要清空购物车
         // TODO 分布式会话中，需要清除用户数据
+
         return ResJSONResult.ok();
     }
+
 }
