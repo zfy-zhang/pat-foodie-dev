@@ -3,6 +3,7 @@ package com.pat.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pat.enums.CommentLevel;
+import com.pat.enums.YesOrNo;
 import com.pat.mapper.*;
 import com.pat.pojo.*;
 import com.pat.pojo.vo.CommentLevelCountsVO;
@@ -156,6 +157,40 @@ public class ItemServiceImpl implements ItemService {
         List<String> specIdList = new ArrayList<>();
         Collections.addAll(specIdList, ids);
         return itemsMapperCustom.queryItemsBySpecIds(specIdList);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public ItemsSpec queryItemsSpecById(String specIds) {
+        return itemsSpecMapper.selectByPrimaryKey(specIds);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public String queryItemMainImageById(String itemId) {
+
+        ItemsImg itemsImg = new ItemsImg();
+        itemsImg.setId(itemId);
+        itemsImg.setIsMain(YesOrNo.YES.type);
+        ItemsImg result = itemsImgMapper.selectOne(itemsImg);
+        return result != null ? result.getUrl() : "";
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void decreaseItemSpecStock(String specId, int byCount) {
+        // 1. 查询库存
+        int stock = 2;
+
+        // 判读库存，是否能够减到0以下
+//        if (stock - byCount < 0) {
+            // 提示用户库存不够
+
+//        }
+        int result = itemsMapperCustom.decreaseItemSpecStock(specId, byCount);
+        if (result != 1) {
+            throw new RuntimeException("订单创建失败，原因：库存不足！");
+        }
     }
 
     private PagedGridResult setterPagedGrid(List<?> list, Integer page) {
