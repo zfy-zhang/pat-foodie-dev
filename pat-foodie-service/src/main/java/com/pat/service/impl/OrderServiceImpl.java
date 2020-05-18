@@ -7,6 +7,8 @@ import com.pat.mapper.OrderStatusMapper;
 import com.pat.mapper.OrdersMapper;
 import com.pat.pojo.*;
 import com.pat.pojo.bo.SubmitOrderBO;
+import com.pat.pojo.vo.MerchantOrdersVO;
+import com.pat.pojo.vo.OrderVO;
 import com.pat.service.AddressService;
 import com.pat.service.ItemService;
 import com.pat.service.OrderService;
@@ -47,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public String createOrder(SubmitOrderBO submitOrderBO) {
+    public OrderVO createOrder(SubmitOrderBO submitOrderBO) {
 
         String userId = submitOrderBO.getUserId();
         String addressId = submitOrderBO.getAddressId();
@@ -124,7 +126,17 @@ public class OrderServiceImpl implements OrderService {
 
         orderStatusMapper.insert(waitPayOrderStatus);
 
-        return orderId;
+        // 4. 构建商户订单， 用于传给支付中心
+        MerchantOrdersVO merchantOrdersVO = new MerchantOrdersVO();
+        merchantOrdersVO.setMerchantOrderId(orderId);
+        merchantOrdersVO.setMerchantUserId(userId);
+        merchantOrdersVO.setAmount(realPayAmount + postAmount);
+        merchantOrdersVO.setPayMethod(payMethod);
+
+        OrderVO orderVO = new OrderVO();
+        orderVO.setOrderId(orderId);
+        orderVO.setMerchantOrdersVO(merchantOrdersVO);
+        return orderVO;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

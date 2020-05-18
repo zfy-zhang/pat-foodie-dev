@@ -1,4 +1,4 @@
-package com.pat.pojo.bo;
+package com.pat.pojo.vo;
 
 /**
  * @Description
@@ -6,7 +6,7 @@ package com.pat.pojo.bo;
  * @Create Date 2020/5/16 4:56 下午
  * @Modify
  */
-public class MerchantOrderBO {
+public class MerchantOrdersVO {
     private String merchantOrderId;     // 商户订单号
     private String merchantUserId;      // 商户方发起用户的用户id
     private Integer amount;             // 实际支付总金额
