@@ -5,7 +5,7 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.pat.enums.PayMethod;
-//import com.pat.enums.PaymentStatus;
+import com.pat.enums.PaymentStatus;
 import com.pat.pojo.Orders;
 import com.pat.pojo.bo.MerchantOrdersBO;
 import com.pat.pojo.vo.PaymentInfoVO;
@@ -14,8 +14,7 @@ import com.pat.resource.WXPayResource;
 import com.pat.service.PaymentOrderService;
 import com.pat.utils.CurrencyUtils;
 import com.pat.utils.ResJSONResult;
-//import com.pat.utils.patJSONResult;
-//import com.pat.utils.RedisOperator;
+import com.pat.utils.RedisOperator;
 import com.pat.wx.entity.PreOrderResult;
 import com.pat.wx.service.WxOrderService;
 import org.apache.commons.lang3.StringUtils;
@@ -33,8 +32,8 @@ public class PaymentController {
 
 	final static Logger log = LoggerFactory.getLogger(PaymentController.class);
 
-//	@Autowired
-//	public RedisOperator redis;
+	@Autowired
+	public RedisOperator redis;
 
 	@Autowired
 	private WXPayResource wxPayResource;
@@ -119,45 +118,45 @@ public class PaymentController {
 	 * @Description: 微信扫码支付页面
 	 */
 //	@GetMapping(value="/getWXPayQRCode")
-//	@PostMapping(value="/getWXPayQRCode")
-//	public ResJSONResult getWXPayQRCode(String merchantOrderId, String merchantUserId) throws Exception{
-//
-////		System.out.println(wxPayResource.toString());
-//
-//		// 根据订单ID和用户ID查询订单详情
-//    	Orders waitPayOrder = paymentOrderService.queryOrderByStatus(merchantUserId, merchantOrderId, PaymentStatus.WAIT_PAY.type);
-//
-//    	// 商品描述
-//		String body = "天天吃货-付款用户[" + merchantUserId + "]";
-//		// 商户订单号
-//		String out_trade_no = merchantOrderId;
-//		// 从redis中去获得这笔订单的微信支付二维码，如果订单状态没有支付没有就放入，这样的做法防止用户频繁刷新而调用微信接口
-//		if (waitPayOrder != null) {
-//			String qrCodeUrl = redis.get(wxPayResource.getQrcodeKey() + ":" + merchantOrderId);
-//
-//			if (StringUtils.isEmpty(qrCodeUrl)) {
-//				// 订单总金额，单位为分
-//				String total_fee = String.valueOf(waitPayOrder.getAmount());
-////				String total_fee = "1";	// 测试用 1分钱
-//
-//				// 统一下单
-//				PreOrderResult preOrderResult = wxOrderService.placeOrder(body, out_trade_no, total_fee);
-//				qrCodeUrl = preOrderResult.getCode_url();
-//			}
-//
-//			PaymentInfoVO paymentInfoVO = new PaymentInfoVO();
-//			paymentInfoVO.setAmount(waitPayOrder.getAmount());
-//			paymentInfoVO.setMerchantOrderId(merchantOrderId);
-//			paymentInfoVO.setMerchantUserId(merchantUserId);
-//			paymentInfoVO.setQrCodeUrl(qrCodeUrl);
-//
-//			redis.set(wxPayResource.getQrcodeKey() + ":" + merchantOrderId, qrCodeUrl, wxPayResource.getQrcodeExpire());
-//
-//			return ResJSONResult.ok(paymentInfoVO);
-//		} else {
-//			return ResJSONResult.errorMsg("该订单不存在，或已经支付");
-//		}
-//	}
+	@PostMapping(value="/getWXPayQRCode")
+	public ResJSONResult getWXPayQRCode(String merchantOrderId, String merchantUserId) throws Exception{
+
+//		System.out.println(wxPayResource.toString());
+
+		// 根据订单ID和用户ID查询订单详情
+    	Orders waitPayOrder = paymentOrderService.queryOrderByStatus(merchantUserId, merchantOrderId, PaymentStatus.WAIT_PAY.type);
+
+    	// 商品描述
+		String body = "天天吃货-付款用户[" + merchantUserId + "]";
+		// 商户订单号
+		String out_trade_no = merchantOrderId;
+		// 从redis中去获得这笔订单的微信支付二维码，如果订单状态没有支付没有就放入，这样的做法防止用户频繁刷新而调用微信接口
+		if (waitPayOrder != null) {
+			String qrCodeUrl = redis.get(wxPayResource.getQrcodeKey() + ":" + merchantOrderId);
+
+			if (StringUtils.isEmpty(qrCodeUrl)) {
+				// 订单总金额，单位为分
+				String total_fee = String.valueOf(waitPayOrder.getAmount());
+//				String total_fee = "1";	// 测试用 1分钱
+
+				// 统一下单
+				PreOrderResult preOrderResult = wxOrderService.placeOrder(body, out_trade_no, total_fee);
+				qrCodeUrl = preOrderResult.getCode_url();
+			}
+
+			PaymentInfoVO paymentInfoVO = new PaymentInfoVO();
+			paymentInfoVO.setAmount(waitPayOrder.getAmount());
+			paymentInfoVO.setMerchantOrderId(merchantOrderId);
+			paymentInfoVO.setMerchantUserId(merchantUserId);
+			paymentInfoVO.setQrCodeUrl(qrCodeUrl);
+
+			redis.set(wxPayResource.getQrcodeKey() + ":" + merchantOrderId, qrCodeUrl, wxPayResource.getQrcodeExpire());
+
+			return ResJSONResult.ok(paymentInfoVO);
+		} else {
+			return ResJSONResult.errorMsg("该订单不存在，或已经支付");
+		}
+	}
 
 
 	/**
