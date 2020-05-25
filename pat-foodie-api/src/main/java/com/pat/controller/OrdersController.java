@@ -2,6 +2,7 @@ package com.pat.controller;
 
 import com.pat.enums.OrderStatusEnum;
 import com.pat.enums.PayMethod;
+import com.pat.pojo.OrderStatus;
 import com.pat.pojo.bo.SubmitOrderBO;
 import com.pat.pojo.vo.MerchantOrdersVO;
 import com.pat.pojo.vo.OrderVO;
@@ -82,5 +83,11 @@ public class OrdersController extends BaseController {
         orderService.updateOrderStatus(merchantOrderId, OrderStatusEnum.WAIT_DELIVER.type);
 
         return HttpStatus.OK.value();
+    }
+
+    @PostMapping("/getPaidOrderInfo")
+    public ResJSONResult getPaidOrderInfo(String orderId) {
+        OrderStatus orderStatus = orderService.queryOrderStatusInfo(orderId);
+        return ResJSONResult.ok(orderStatus);
     }
 }
