@@ -5,18 +5,19 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 /**
  * @Title: Redis 工具类
- * @author 慕课网
+ * @author 
  */
 @Component
 public class RedisOperator {
 
-//	@Autowired
-//    private RedisTemplate<String, Object> redisTemplate;
+	@Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
