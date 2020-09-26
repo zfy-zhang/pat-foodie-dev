@@ -21,38 +21,41 @@ import org.springframework.transaction.annotation.Transactional;
 public class StuServiceImpl implements StuService {
 
     @Autowired
-    private StuMapper stuMapper;
+    public StuMapper stuMapper;
 
-    @Override
     @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
     public Stu getStuInfo(int id) {
         return stuMapper.selectByPrimaryKey(id);
     }
 
-    @Override
     @Transactional(propagation = Propagation.REQUIRED)
+    @Override
     public void saveStu() {
+
         Stu stu = new Stu();
-        stu.setName("不才人");
-        stu.setAge(27);
+        stu.setName("jack");
+        stu.setAge(19);
         stuMapper.insert(stu);
     }
 
-    @Override
     @Transactional(propagation = Propagation.REQUIRED)
+    @Override
     public void updateStu(int id) {
+
         Stu stu = new Stu();
         stu.setId(id);
-        stu.setName("zhangfy");
+        stu.setName("lucy");
         stu.setAge(20);
         stuMapper.updateByPrimaryKey(stu);
     }
 
-    @Override
     @Transactional(propagation = Propagation.REQUIRED)
+    @Override
     public void deleteStu(int id) {
         stuMapper.deleteByPrimaryKey(id);
     }
+
 
 
     public void saveParent() {
@@ -61,7 +64,7 @@ public class StuServiceImpl implements StuService {
         stu.setAge(19);
         stuMapper.insert(stu);
     }
-    @Transactional(propagation = Propagation.NESTED)
+    @Transactional(propagation = Propagation.REQUIRED)
     public void saveChildren() {
         saveChild1();
         int a = 1 / 0;
@@ -81,3 +84,4 @@ public class StuServiceImpl implements StuService {
         stuMapper.insert(stu2);
     }
 }
+

@@ -10,5 +10,6 @@ package com.pat.service;
  * Description：
  */
 public interface TestTransService {
+
     public void testPropagationTrans();
 }

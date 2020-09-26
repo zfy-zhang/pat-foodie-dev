@@ -14,6 +14,7 @@
         <module>pat-foodie-mapper</module>
         <module>pat-foodie-service</module>
         <module>pat-foodie-api</module>
+        <module>pat-foodie-payment</module>
     </modules>
 
     <!--
@@ -148,10 +149,16 @@
         </dependency>
 
         <!-- 打包war [3] 添加依赖 -->
-<!--        <dependency>-->
-<!--            <groupId>javax.servlet</groupId>-->
-<!--            <artifactId>javax.servlet-api</artifactId>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- 引入 redis 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
     </dependencies>
 </project>
