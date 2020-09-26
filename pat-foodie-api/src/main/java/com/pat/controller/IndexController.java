@@ -7,16 +7,20 @@ import com.pat.pojo.vo.CategoryVO;
 import com.pat.pojo.vo.NewItemsVO;
 import com.pat.service.CarouseService;
 import com.pat.service.CategoryService;
+import com.pat.utils.JsonUtils;
+import com.pat.utils.RedisOperator;
 import com.pat.utils.ResJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,12 +40,31 @@ public class IndexController {
     @Autowired
     CategoryService categoryService;
 
+    @Autowired
+    private RedisOperator redisOperator;
+
     @ApiOperation(value = "获取首页轮播图列表", notes = "获取首页轮播图列表", httpMethod = "GET")
     @GetMapping("/carousel")
     public ResJSONResult carousel() {
-        List<Carousel> list = carouseService.queryAll(YesOrNo.YES.type);
+
+
+        List<Carousel> list = new ArrayList<>();
+        String carouselStr = redisOperator.get("carousel");
+        if (StringUtils.isBlank(carouselStr)) {
+            list = carouseService.queryAll(YesOrNo.YES.type);
+            redisOperator.set("carousel", JsonUtils.objectToJson(list));
+        } else {
+            list = JsonUtils.jsonToList(carouselStr, Carousel.class);
+        }
+
         return ResJSONResult.ok(list);
     }
+
+    /**
+     * 1. 后台运营系统，一旦广告（轮播图）发生更改， 就可以删除缓存，然后重置
+     * 2. 定时重置，比如凌晨两点重置
+     * 3. 每个轮播图都有可能是一个广告，每个广告都会有一个过期时间，过期了就重置
+     */
 
     /**
      * 首页分类展示需求：

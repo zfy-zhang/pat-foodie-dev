@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Title: Redis 工具类
- * @author 
+ * @author
  */
 @Component
 public class RedisOperator {
 
-	@Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+//	@Autowired
+//    private RedisTemplate<String, Object> redisTemplate;
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;

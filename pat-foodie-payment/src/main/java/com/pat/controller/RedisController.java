@@ -1,5 +1,6 @@
 package com.pat.controller;
 
+import com.pat.utils.RedisOperator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,23 +20,26 @@ public class RedisController {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
+	@Autowired
+	private RedisOperator redisOperator;
+
 	@GetMapping("/set")
 	@ResponseBody
 	public Object set(String key, String value) {
-		redisTemplate.opsForValue().set(key, value);
+		redisOperator.set(key, value);
 		return "OK";
 	}
 
 	@GetMapping("/get")
 	@ResponseBody
 	public String get(String key) {
-		return (String) redisTemplate.opsForValue().get(key);
+		return (String) redisOperator.get(key);
 	}
 
 	@GetMapping("/delete")
 	@ResponseBody
 	public Object delete(String key) {
-		redisTemplate.delete(key);
+		redisOperator.del(key);
 		return "OK";
 	}
 	

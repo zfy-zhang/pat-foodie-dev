@@ -9,7 +9,7 @@ public class Users {
     private Integer id;
 
     /**
-     * 用户在慕课网的用户id
+     * 用户在网站的用户id
      */
     @Column(name = "imooc_user_id")
     private String imoocUserId;
@@ -40,18 +40,18 @@ public class Users {
     }
 
     /**
-     * 获取用户在慕课网的用户id
+     * 获取用户在网站的用户id
      *
-     * @return imooc_user_id - 用户在慕课网的用户id
+     * @return imooc_user_id - 用户在网站的用户id
      */
     public String getImoocUserId() {
         return imoocUserId;
     }
 
     /**
-     * 设置用户在慕课网的用户id
+     * 设置用户在网站的用户id
      *
-     * @param imoocUserId 用户在慕课网的用户id
+     * @param imoocUserId 用户在网站的用户id
      */
     public void setImoocUserId(String imoocUserId) {
         this.imoocUserId = imoocUserId;
