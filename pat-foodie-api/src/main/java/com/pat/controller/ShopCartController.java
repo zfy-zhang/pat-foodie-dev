@@ -80,7 +80,7 @@ public class ShopCartController extends BaseController {
     @PostMapping("/del")
     public ResJSONResult del(
             @RequestParam String userId,
-            @RequestBody String itemSpecId,
+            @RequestParam String itemSpecId,
             HttpServletRequest request,
             HttpServletResponse response
     ) {

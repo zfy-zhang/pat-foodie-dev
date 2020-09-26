@@ -6,6 +6,7 @@ import com.pat.mapper.OrderItemsMapper;
 import com.pat.mapper.OrderStatusMapper;
 import com.pat.mapper.OrdersMapper;
 import com.pat.pojo.*;
+import com.pat.pojo.bo.ShopcartBO;
 import com.pat.pojo.bo.SubmitOrderBO;
 import com.pat.pojo.vo.MerchantOrdersVO;
 import com.pat.pojo.vo.OrderVO;
@@ -51,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public OrderVO createOrder(SubmitOrderBO submitOrderBO) {
+    public OrderVO createOrder(List<ShopcartBO> shopcartList, SubmitOrderBO submitOrderBO) {
 
         String userId = submitOrderBO.getUserId();
         String addressId = submitOrderBO.getAddressId();
@@ -88,10 +89,12 @@ public class OrderServiceImpl implements OrderService {
         Integer realPayAmount = 0;  // 优惠后的实际价格累计
 
         for (String itemSpecId : itemSpecIdArr) {
-            // TODO 整合Redis后，商品购买的数量重新从redis的购物车中获取
-            int buyCounts = 1;
+            ShopcartBO shopcartBO = getByCountsFromShopCart(shopcartList, itemSpecId);
+            // 整合Redis后，商品购买的数量重新从redis的购物车中获取
+            int buyCounts = shopcartBO.getBuyCounts();
+
             // 2.1 根据规格id，查询规格的具体信息，主要获取价格
-            ItemsSpec itemsSpec = itemService.queryItemsSpecById(itemSpecIds);
+            ItemsSpec itemsSpec = itemService.queryItemsSpecById(itemSpecId);
             totalAmount += itemsSpec.getPriceNormal() * buyCounts;
             realPayAmount += itemsSpec.getPriceDiscount() * buyCounts;
 
@@ -139,6 +142,21 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setOrderId(orderId);
         orderVO.setMerchantOrdersVO(merchantOrdersVO);
         return orderVO;
+    }
+
+    /**
+     * 从 Redis 中的购物车获取商品，目的：byCounts
+     * @param shopcartBOList
+     * @param specId
+     * @return
+     */
+    private ShopcartBO getByCountsFromShopCart(List<ShopcartBO> shopcartBOList, String specId) {
+        for (ShopcartBO shopcartBO : shopcartBOList) {
+            if (shopcartBO.getSpecId().equals(specId)) {
+                return shopcartBO;
+            }
+        }
+        return null;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

@@ -3,13 +3,17 @@ package com.pat.controller;
 import com.pat.enums.OrderStatusEnum;
 import com.pat.enums.PayMethod;
 import com.pat.pojo.OrderStatus;
+import com.pat.pojo.bo.ShopcartBO;
 import com.pat.pojo.bo.SubmitOrderBO;
 import com.pat.pojo.vo.MerchantOrdersVO;
 import com.pat.pojo.vo.OrderVO;
 import com.pat.service.OrderService;
+import com.pat.utils.JsonUtils;
+import com.pat.utils.RedisOperator;
 import com.pat.utils.ResJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @Description
@@ -38,6 +43,9 @@ public class OrdersController extends BaseController {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    private RedisOperator redisOperator;
+
     @ApiOperation(value = "用户下单", notes = "用户下单", httpMethod = "POST")
     @PostMapping("/create")
     public ResJSONResult create (@RequestBody SubmitOrderBO submitOrderBO,
@@ -50,8 +58,15 @@ public class OrdersController extends BaseController {
         }
         System.out.println(submitOrderBO);
 
+        String shopcartJson = redisOperator.get(FOODIE_SHOPCART + ":" + submitOrderBO.getUserId());
+        if (StringUtils.isBlank(shopcartJson)) {
+            return ResJSONResult.errorMsg("购物车数据不正确");
+        }
+
+        List<ShopcartBO> shopcartList = JsonUtils.jsonToList(shopcartJson, ShopcartBO.class);
+
         // 1. 创建订单
-        OrderVO orderVO = orderService.createOrder(submitOrderBO);
+        OrderVO orderVO = orderService.createOrder(shopcartList, submitOrderBO);
         String orderId = orderVO.getOrderId();
 
 
