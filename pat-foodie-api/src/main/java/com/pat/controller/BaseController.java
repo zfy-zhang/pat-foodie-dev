@@ -29,9 +29,14 @@ public class BaseController {
 //    String payReturnUrl = "http://api.z.mukewang.com/foodie-dev-api/orders/notifyMerchantOrderPaid";
 
     // 用户上传头像的位置
-    public static final String IMAGE_USER_FACE_LOCATION = File.separator + "workspaces" +
+    public static final String IMAGE_USER_FACE_LOCATION = File.separator + "Users" +
+            File.separator + "alisha" +
+            File.separator + "IdeaProjects" +
+            File.separator + "pat-foodie-dev" +
+            File.separator + "workspaces" +
             File.separator + "images" +
             File.separator + "foodie" +
             File.separator + "faces";
+
 
 }
