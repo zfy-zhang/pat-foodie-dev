@@ -1,5 +1,9 @@
 package com.pat.pojo.vo;
 
+import com.pat.pojo.bo.ShopcartBO;
+
+import java.util.List;
+
 /**
  * @Description
  * @Author 不才人
@@ -9,6 +13,15 @@ package com.pat.pojo.vo;
 public class OrderVO {
     private String orderId;
     private MerchantOrdersVO merchantOrdersVO;
+    private List<ShopcartBO> toBeRemovedShopCatList;
+
+    public List<ShopcartBO> getToBeRemovedShopCatList() {
+        return toBeRemovedShopCatList;
+    }
+
+    public void setToBeRemovedShopCatList(List<ShopcartBO> toBeRemovedShopCatList) {
+        this.toBeRemovedShopCatList = toBeRemovedShopCatList;
+    }
 
     public String getOrderId() {
         return orderId;

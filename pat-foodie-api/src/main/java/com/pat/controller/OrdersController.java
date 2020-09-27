@@ -8,6 +8,7 @@ import com.pat.pojo.bo.SubmitOrderBO;
 import com.pat.pojo.vo.MerchantOrdersVO;
 import com.pat.pojo.vo.OrderVO;
 import com.pat.service.OrderService;
+import com.pat.utils.CookieUtils;
 import com.pat.utils.JsonUtils;
 import com.pat.utils.RedisOperator;
 import com.pat.utils.ResJSONResult;
@@ -71,8 +72,12 @@ public class OrdersController extends BaseController {
 
 
         // 2. 创建订单以后，移除购物车中已结算（已提交）的商品
-        // TODO 整合 Redis 之后，完善购物车中的已结算商品清除，并同步到前端的cookie
-//        CookieUtils.setCookie(request, response, FOODIE_SHOPCART, "", true);
+        // 清理覆盖现有的redis汇总的购物车数据
+        shopcartList.removeAll(orderVO.getToBeRemovedShopCatList());
+        redisOperator.set(FOODIE_SHOPCART + ":" + submitOrderBO.getUserId(), JsonUtils.objectToJson(shopcartList));
+        // 整合 Redis 之后，完善购物车中的已结算商品清除，并同步到前端的cookie
+        CookieUtils.setCookie(request, response, FOODIE_SHOPCART, JsonUtils.objectToJson(shopcartList) , true);
+
         // 3. 向支付中心发送当前订单，用于保存支付中心的订单数据
         MerchantOrdersVO merchantOrdersVO = orderVO.getMerchantOrdersVO();
         merchantOrdersVO.setReturnUrl(payReturnUrl);

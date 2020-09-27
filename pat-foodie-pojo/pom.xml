@@ -21,14 +21,4 @@
 
     </dependencies>
 
-
-    <dependencies>
-
-        <dependency>
-            <groupId>com.pat</groupId>
-            <artifactId>pat-foodie-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-    </dependencies>
 </project>
