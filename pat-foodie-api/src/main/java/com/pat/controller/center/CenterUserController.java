@@ -6,6 +6,7 @@ import com.pat.pojo.bo.center.CenterUserBO;
 import com.pat.resource.FileUpload;
 import com.pat.service.center.CenterUserService;
 import com.pat.utils.CookieUtils;
+import com.pat.utils.DateUtil;
 import com.pat.utils.JsonUtils;
 import com.pat.utils.ResJSONResult;
 import io.swagger.annotations.Api;
@@ -74,12 +75,22 @@ public class CenterUserController extends BaseController {
                     String fileNameArr[] = fileName.split("\\.");
                     // 获取文件的后缀名
                     String suffix = fileNameArr[fileNameArr.length - 1];
+
+                    if (!suffix.equalsIgnoreCase("png") &&
+                            !suffix.equalsIgnoreCase("jpeg") &&
+                            !suffix.equalsIgnoreCase("jpg")) {
+
+                        return ResJSONResult.errorMsg("图片格式不正确！");
+                    }
                     // face-{userid}.png
                     // 文件名称重组，覆盖式上传，增量式：额外拼接当前时间
                     String newFileName = "face-" + userId + "." + suffix;
 
                     // 上传的头像最终保存的位置
                     String finalFacePath = fileFace + uploadPathPrefix + File.separator + newFileName;
+
+                    // 用于提供给web服务访问的地址
+                    uploadPathPrefix += ("/" + newFileName);
 
                     File outFile = new File(finalFacePath);
                     if (outFile.getParentFile() != null) {
@@ -108,6 +119,20 @@ public class CenterUserController extends BaseController {
         } else {
             return ResJSONResult.errorMsg("文件不能为空!");
         }
+
+        // 获取图片服务地址
+        String imageServerUrl = fileUpload.getImageServerUrl();
+
+        // 由于浏览器可能存在缓存的情况，所以在这里，我们需要加上时间戳来保证更新后的图片可以及时刷新
+        String finalUserFaceUrl = imageServerUrl + uploadPathPrefix + "?t=" + DateUtil.getCurrentDateString(DateUtil.DATE_PATTERN);
+
+        // 跟新用户头像到数据库
+        Users userResult = centerUserService.updateUserFace(userId, finalUserFaceUrl);
+
+        userResult = setNullProperty(userResult);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+
+        // TODO 后续要改，增加令牌token，整合进redis，分布式会话
 
         return ResJSONResult.ok();
     }
