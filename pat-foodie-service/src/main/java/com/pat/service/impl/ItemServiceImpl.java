@@ -170,7 +170,7 @@ public class ItemServiceImpl implements ItemService {
     public String queryItemMainImageById(String itemId) {
 
         ItemsImg itemsImg = new ItemsImg();
-        itemsImg.setId(itemId);
+        itemsImg.setItemId(itemId);
         itemsImg.setIsMain(YesOrNo.YES.type);
         ItemsImg result = itemsImgMapper.selectOne(itemsImg);
         return result != null ? result.getUrl() : "";

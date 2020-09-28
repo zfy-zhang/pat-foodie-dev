@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
- * @Description:
+ * @Description: 文件上传大小限制衣长处理类
  * @Author <a href="mailto:zfy_zang@163.com">Vincent</a>
  * @Create 2020/9/27
  * @Modify

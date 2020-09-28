@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * @Description
+ * @Description web 配置类 {@link WebMvcConfigurer}
  * @Author 不才人
  * @Create Date 2020/5/16 8:50 下午
  * @Modify

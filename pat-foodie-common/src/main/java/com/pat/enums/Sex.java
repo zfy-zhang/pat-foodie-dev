@@ -1,7 +1,7 @@
 package com.pat.enums;
 
 /**
- * @Description：
+ * @Description：性别枚举类
  * @Author 不才人
  * @Create Date 2020/5/9 11:00 上午
  * @Modify

@@ -11,7 +11,7 @@ import java.security.MessageDigest;
  * Author: elisha
  * Date: 2020/5/8 23:22
  * Copyright (c) 2020,All Rights Reserved.
- * Description：
+ * Description：MD5加密工具类
  */
 public class MD5Utils {
 

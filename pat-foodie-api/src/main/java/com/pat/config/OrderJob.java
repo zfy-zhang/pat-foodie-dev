@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * @Description
+ * @Description：定时任务类
  * @Author 不才人
  * @Create Date 2020/5/25 4:43 下午
  * @Modify
