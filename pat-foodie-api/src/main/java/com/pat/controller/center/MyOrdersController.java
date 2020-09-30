@@ -1,6 +1,7 @@
 package com.pat.controller.center;
 
 import com.pat.controller.BaseController;
+import com.pat.pojo.Orders;
 import com.pat.service.center.MyOrdersService;
 import com.pat.utils.PagedGridResult;
 import com.pat.utils.ResJSONResult;
@@ -9,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -48,9 +50,81 @@ public class MyOrdersController extends BaseController {
             pageSize = COMMON_PAGE_SIZE;
         }
 
+
         PagedGridResult grid = myOrdersService.queryMyOrders(userId, orderStatus, page, pageSize);
 
         return ResJSONResult.ok(grid);
     }
 
+    @ApiOperation(value="商家发货", notes = "商家发货", httpMethod = "GET")
+    @GetMapping("/deliver")
+    public ResJSONResult deliver(
+            @ApiParam(name = "orderId", value = "orderId", required = true)
+            @RequestParam String orderId) {
+
+        if (StringUtils.isBlank(orderId)) {
+            return ResJSONResult.errorMsg("订单id不能为空");
+        }
+
+        myOrdersService.updateDeliverOrderStatus(orderId);
+        return ResJSONResult.ok();
+    }
+
+    @ApiOperation(value="用户确认收货", notes = "用户确认收货", httpMethod = "POST")
+    @PostMapping("/confirmReceive")
+    public ResJSONResult confirmReceive(
+            @ApiParam(name = "orderId", value = "orderId", required = true)
+            @RequestParam String orderId,
+            @ApiParam(name = "userId", value = "用户Id", required = true)
+            @RequestParam String userId) {
+
+        ResJSONResult checkJSONResult = checkUserOrder(userId, orderId);
+
+        if (checkJSONResult.getStatus() != HttpStatus.OK.value()) {
+            return checkJSONResult;
+        }
+
+        boolean result = myOrdersService.updateReceiveOrderStatus(orderId);
+        if (!result) {
+            ResJSONResult.errorMsg("订单确认收货失败！");
+        }
+
+        return ResJSONResult.ok();
+    }
+
+    @ApiOperation(value="删除订单", notes = "删除订单", httpMethod = "POST")
+    @PostMapping("/delete")
+    public ResJSONResult delete(
+            @ApiParam(name = "orderId", value = "orderId", required = true)
+            @RequestParam String orderId,
+            @ApiParam(name = "userId", value = "用户Id", required = true)
+            @RequestParam String userId) {
+
+        ResJSONResult checkJSONResult = checkUserOrder(userId, orderId);
+
+        if (checkJSONResult.getStatus() != HttpStatus.OK.value()) {
+            return checkJSONResult;
+        }
+
+        boolean result = myOrdersService.deleteOrder(userId, orderId);
+        if (!result) {
+            ResJSONResult.errorMsg("删除订单失败！");
+        }
+
+        return ResJSONResult.ok();
+    }
+
+    /**
+     * 用于验证用户和订单之间是否有关联，避免非法用户调用
+     * @param orderId
+     * @param userId
+     * @return
+     */
+    private ResJSONResult checkUserOrder(String userId, String orderId) {
+        Orders orders = myOrdersService.queryMyOrder(userId, orderId);
+        if (orders == null) {
+            return ResJSONResult.errorMsg("订单不存在");
+        }
+        return ResJSONResult.ok();
+    }
 }
