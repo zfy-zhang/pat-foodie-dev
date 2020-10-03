@@ -9,6 +9,7 @@
     <result column="realPayAmount" property="realPayAmount" />
     <result column="postAmount" property="postAmount" />
     <result column="orderStatus" property="orderStatus" />
+    <result column="isComment" property="isComment" />
 
     <collection property="subOrderItemList"
                 select="getSubItems"
@@ -31,7 +32,8 @@
     od.pay_method AS payMethod,
     od.real_pay_amount AS realPayAmount,
     od.post_amount AS postAmount,
-    os.order_status AS orderStatus
+    os.order_status AS orderStatus,
+    od.is_comment AS isComment
     FROM
     orders od
     LEFT JOIN

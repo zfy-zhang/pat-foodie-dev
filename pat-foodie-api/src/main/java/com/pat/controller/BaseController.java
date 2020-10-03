@@ -1,5 +1,8 @@
 package com.pat.controller;
 
+import com.pat.pojo.Orders;
+import com.pat.service.center.MyOrdersService;
+import com.pat.utils.ResJSONResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -39,4 +42,20 @@ public class BaseController {
             File.separator + "faces";
 
 
+    @Autowired
+    private MyOrdersService myOrdersService;
+
+    /**
+     * 用于验证用户和订单之间是否有关联，避免非法用户调用
+     * @param orderId
+     * @param userId
+     * @return
+     */
+    public ResJSONResult checkUserOrder(String userId, String orderId) {
+        Orders orders = myOrdersService.queryMyOrder(userId, orderId);
+        if (orders == null) {
+            return ResJSONResult.errorMsg("订单不存在");
+        }
+        return ResJSONResult.ok(orders);
+    }
 }

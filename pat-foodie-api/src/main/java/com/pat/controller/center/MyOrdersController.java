@@ -120,11 +120,11 @@ public class MyOrdersController extends BaseController {
      * @param userId
      * @return
      */
-    private ResJSONResult checkUserOrder(String userId, String orderId) {
-        Orders orders = myOrdersService.queryMyOrder(userId, orderId);
-        if (orders == null) {
-            return ResJSONResult.errorMsg("订单不存在");
-        }
-        return ResJSONResult.ok();
-    }
+//    private ResJSONResult checkUserOrder(String userId, String orderId) {
+//        Orders orders = myOrdersService.queryMyOrder(userId, orderId);
+//        if (orders == null) {
+//            return ResJSONResult.errorMsg("订单不存在");
+//        }
+//        return ResJSONResult.ok();
+//    }
 }
