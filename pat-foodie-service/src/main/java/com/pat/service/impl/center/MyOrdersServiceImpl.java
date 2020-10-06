@@ -1,7 +1,6 @@
 package com.pat.service.impl.center;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.pat.enums.OrderStatusEnum;
 import com.pat.enums.YesOrNo;
 import com.pat.mapper.OrderStatusMapper;
@@ -10,6 +9,7 @@ import com.pat.mapper.OrdersMapperCustom;
 import com.pat.pojo.OrderStatus;
 import com.pat.pojo.Orders;
 import com.pat.pojo.vo.MyOrdersVO;
+import com.pat.pojo.vo.OrderStatusCountsVO;
 import com.pat.service.center.MyOrdersService;
 import com.pat.utils.PagedGridResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +116,46 @@ public class MyOrdersServiceImpl extends BaseService implements MyOrdersService 
         int result = ordersMapper.updateByExampleSelective(orders, example);
 
         return result == 1 ? true : false;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public OrderStatusCountsVO getOrderStatusCounts(String userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        map.put("orderStatus", OrderStatusEnum.WAIT_PAY.type);
+        int waitPayCounts = ordersMapperCustom.getMyOrderStatusCounts(map);
+
+        map.put("orderStatus", OrderStatusEnum.WAIT_DELIVER.type);
+        int waitDeliverCounts = ordersMapperCustom.getMyOrderStatusCounts(map);
+
+        map.put("orderStatus", OrderStatusEnum.WAIT_RECEIVE.type);
+        int waitReceiveCounts = ordersMapperCustom.getMyOrderStatusCounts(map);
+
+        map.put("orderStatus", OrderStatusEnum.SUCCESS.type);
+        map.put("isComment", YesOrNo.NO.type);
+        int waitCommentCounts = ordersMapperCustom.getMyOrderStatusCounts(map);
+
+        OrderStatusCountsVO orderStatusCountsVO = new OrderStatusCountsVO(
+                                                                        waitPayCounts,
+                                                                        waitDeliverCounts,
+                                                                        waitReceiveCounts,
+                                                                        waitCommentCounts);
+        return orderStatusCountsVO;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult getOrdersTrend(String userId,
+                                          Integer page,
+                                          Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+
+        PageHelper.startPage(page, pageSize);
+        List<OrderStatus> myOrderTrend = ordersMapperCustom.getMyOrderTrend(map);
+
+        return setterPagedGrid(myOrderTrend, page);
     }
 
 //    private PagedGridResult setterPagedGrid(List<?> list, Integer page) {

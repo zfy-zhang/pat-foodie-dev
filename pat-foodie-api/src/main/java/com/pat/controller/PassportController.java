@@ -3,11 +3,13 @@ package com.pat.controller;
 import com.pat.pojo.Users;
 import com.pat.pojo.bo.ShopcartBO;
 import com.pat.pojo.bo.UserBO;
+import com.pat.pojo.vo.UsersVO;
 import com.pat.service.UserService;
 import com.pat.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Description: 注册登录
@@ -85,11 +88,20 @@ public class PassportController extends BaseController {
         Users userResult = userService.createUser(userBO);
 
         userResult = setNullProperty(userResult);
+
+        // 实现用户的redis会话
+        String uniqueToken = UUID.randomUUID().toString();
+        redisOperator.set(REDIS_USER_TOKEN + ":" + userResult.getId(), uniqueToken);
+
+        UsersVO usersVO = new UsersVO();
+        BeanUtils.copyProperties(userResult, usersVO);
+
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
+
         // TODO 生存用户token，存入redis会话
         // 同步购物车数据
         syncShopCartData(userResult.getId(), request, response);
 
-        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
 
         return ResJSONResult.ok();
     }

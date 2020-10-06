@@ -1,5 +1,6 @@
 package com.pat.mapper;
 
+import com.pat.pojo.OrderStatus;
 import com.pat.pojo.vo.MyOrdersVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,5 +15,10 @@ import java.util.Map;
  * @since
  */
 public interface OrdersMapperCustom {
+
     public List<MyOrdersVO> queryMyOrders(@Param("paramsMap") Map<String, Object> map);
+
+    int getMyOrderStatusCounts(@Param("paramsMap") Map<String, Object> map);
+
+    List<OrderStatus> getMyOrderTrend(@Param("paramsMap") Map<String, Object> map);
 }

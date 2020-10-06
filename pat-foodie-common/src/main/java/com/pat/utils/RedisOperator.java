@@ -1,10 +1,15 @@
 package com.pat.utils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.StringRedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -103,6 +108,41 @@ public class RedisOperator {
 	public String get(String key) {
 		return (String)redisTemplate.opsForValue().get(key);
 	}
+
+	/**
+	 * 批量查询，对应mget
+	 * @param keys
+	 * @return
+	 */
+	public List<String> mget(List<String> keys) {
+		return redisTemplate.opsForValue().multiGet(keys);
+	}
+
+	/**
+	 * 批量查询，管道pipeline
+	 * @param keys
+	 * @return
+	 */
+	public List<Object> batchGet(List<String> keys) {
+
+//		nginx -> keepalive
+//		redis -> pipeline
+
+		List<Object> result = redisTemplate.executePipelined(new RedisCallback<String>() {
+			@Override
+			public String doInRedis(RedisConnection connection) throws DataAccessException {
+				StringRedisConnection src = (StringRedisConnection)connection;
+
+				for (String k : keys) {
+					src.get(k);
+				}
+				return null;
+			}
+		});
+
+		return result;
+	}
+
 
 	// Hash（哈希表）
 
