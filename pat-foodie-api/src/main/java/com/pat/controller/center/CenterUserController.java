@@ -3,6 +3,7 @@ package com.pat.controller.center;
 import com.pat.controller.BaseController;
 import com.pat.pojo.Users;
 import com.pat.pojo.bo.center.CenterUserBO;
+import com.pat.pojo.vo.UsersVO;
 import com.pat.resource.FileUpload;
 import com.pat.service.center.CenterUserService;
 import com.pat.utils.CookieUtils;
@@ -129,10 +130,11 @@ public class CenterUserController extends BaseController {
         // 跟新用户头像到数据库
         Users userResult = centerUserService.updateUserFace(userId, finalUserFaceUrl);
 
-        userResult = setNullProperty(userResult);
-        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+//        userResult = setNullProperty(userResult);
 
-        // TODO 后续要改，增加令牌token，整合进redis，分布式会话
+        // 增加令牌token，整合进redis，分布式会话
+        UsersVO usersVO = convertUserVO(userResult);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
 
         return ResJSONResult.ok();
     }
@@ -153,10 +155,12 @@ public class CenterUserController extends BaseController {
         }
 
         Users userInfo = centerUserService.updateUserInfo(userId, centerUserBO);
-        userInfo = setNullProperty(userInfo);
-        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userInfo), true);
+//        userInfo = setNullProperty(userInfo);
 
-        // TODO 后续要改，增加令牌token，整合进redis，分布式会话
+        // 增加令牌token，整合进redis，分布式会话
+        UsersVO usersVO = convertUserVO(userInfo);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
+
         return ResJSONResult.ok();
     }
 

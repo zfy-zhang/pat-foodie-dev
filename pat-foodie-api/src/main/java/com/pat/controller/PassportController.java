@@ -89,16 +89,11 @@ public class PassportController extends BaseController {
 
         userResult = setNullProperty(userResult);
 
-        // 实现用户的redis会话
-        String uniqueToken = UUID.randomUUID().toString();
-        redisOperator.set(REDIS_USER_TOKEN + ":" + userResult.getId(), uniqueToken);
+        UsersVO usersVO = convertUserVO(userResult);
 
-        UsersVO usersVO = new UsersVO();
-        BeanUtils.copyProperties(userResult, usersVO);
 
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
 
-        // TODO 生存用户token，存入redis会话
         // 同步购物车数据
         syncShopCartData(userResult.getId(), request, response);
 
@@ -106,6 +101,16 @@ public class PassportController extends BaseController {
         return ResJSONResult.ok();
     }
 
+//    private UsersVO convertUserVO(Users userResult) {
+//        // 实现用户的redis会话
+//        String uniqueToken = UUID.randomUUID().toString();
+//        redisOperator.set(REDIS_USER_TOKEN + ":" + userResult.getId(), uniqueToken);
+//
+//        UsersVO usersVO = new UsersVO();
+//        BeanUtils.copyProperties(userResult, usersVO);
+//        usersVO.setUserUniqueToken(uniqueToken);
+//        return usersVO;
+//    }
 
     /**
      * 注册登陆成功后，同步 cookie 和 redis 中的购物车数据
@@ -202,9 +207,12 @@ public class PassportController extends BaseController {
         }
 
         userResult = setNullProperty(userResult);
-        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult), true);
+        // 生存用户token，存入redis会话
+        UsersVO usersVO = convertUserVO(userResult);
 
-        // TODO 生存用户token，存入redis会话
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(usersVO), true);
+
+
         // 同步购物车数据
         syncShopCartData(userResult.getId(), request, response);
 
@@ -227,9 +235,11 @@ public class PassportController extends BaseController {
         // 清除用户相关信息的 cookie
         CookieUtils.deleteCookie(request, response, "user");
 
-        // 用户推出登录，需要清空购物车
+        // 用户退出登录，需要清空redis中的会话信息
         CookieUtils.deleteCookie(request, response, FOODIE_SHOPCART);
-        // TODO 分布式会话中，需要清除用户数据
+
+        // 分布式会话中，需要清除用户数据
+        redisOperator.del(REDIS_USER_TOKEN + ":" + userId);
 
         return ResJSONResult.ok();
     }

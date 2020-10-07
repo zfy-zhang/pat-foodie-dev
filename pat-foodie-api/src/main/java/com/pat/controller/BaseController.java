@@ -1,12 +1,17 @@
 package com.pat.controller;
 
 import com.pat.pojo.Orders;
+import com.pat.pojo.Users;
+import com.pat.pojo.vo.UsersVO;
 import com.pat.service.center.MyOrdersService;
+import com.pat.utils.RedisOperator;
 import com.pat.utils.ResJSONResult;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
+import java.util.UUID;
 
 /**
  * @Description
@@ -16,6 +21,9 @@ import java.io.File;
  */
 @Controller
 public class BaseController {
+
+    @Autowired
+    private RedisOperator redisOperator;
 
     public static final String FOODIE_SHOPCART = "shopcart";
 
@@ -60,4 +68,16 @@ public class BaseController {
         }
         return ResJSONResult.ok(orders);
     }
+
+    public UsersVO convertUserVO(Users userResult) {
+        // 实现用户的redis会话
+        String uniqueToken = UUID.randomUUID().toString();
+        redisOperator.set(REDIS_USER_TOKEN + ":" + userResult.getId(), uniqueToken);
+
+        UsersVO usersVO = new UsersVO();
+        BeanUtils.copyProperties(userResult, usersVO);
+        usersVO.setUserUniqueToken(uniqueToken);
+        return usersVO;
+    }
+
 }
