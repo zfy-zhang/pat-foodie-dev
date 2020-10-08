@@ -66,6 +66,10 @@ public class ResJSONResult {
         return new ResJSONResult(502, msg, null);
     }
 
+    public static ResJSONResult errorUserTicket(String msg) {
+        return new ResJSONResult(557, msg, null);
+    }
+
     public static ResJSONResult errorException(String msg) {
         return new ResJSONResult(555, msg, null);
     }

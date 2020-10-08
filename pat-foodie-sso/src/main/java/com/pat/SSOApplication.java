@@ -9,13 +9,11 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 import tk.mybatis.spring.annotation.MapperScan;
 
 /**
- * Project Name: pat-foodie-dev
- * File Name: Application
- * Package Name: com.pat
- * Author: elisha
- * Date: 2020/5/3 23:16
- * Copyright (c) 2020,All Rights Reserved.
- * Description：
+ * @Description:
+ * @Author <a href="mailto:zfy_zang@163.com">Vincent</a>
+ * @Create 2020/10/7
+ * @Modify
+ * @since
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 // 扫描 mybatis 通用 mapper 所在的包
@@ -25,9 +23,10 @@ import tk.mybatis.spring.annotation.MapperScan;
 //@EnableTransactionManagement
 @EnableScheduling       // 开启定时任务
 @EnableRedisHttpSession // 开启使用 redis 作为 Spring Session
-public class Application {
+public class SSOApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(SSOApplication.class, args);
     }
 }
+
